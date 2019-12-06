@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dawn;
+using Domain.Interfaces;
 using Domain.Models;
 using LoggerService.Interfaces;
 using Service.Extensions;
@@ -55,6 +57,7 @@ namespace Service.Services
         public async Task<SimpleEntityOutput> GetSingleById(Guid id)
         {
             var entity = await _unitOfWork.GetRepository<SimpleEntity>().GetSingle(x => x.Id == id);
+            entity = Guard.Argument(entity).EntityExists();
             return new SimpleEntityOutput(entity);
         }
 

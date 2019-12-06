@@ -5,6 +5,7 @@ using Common.Extensions;
 using LoggerService.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Service.Exceptions;
 
 namespace NetCore3Test.Middleware
 {
@@ -44,6 +45,8 @@ namespace NetCore3Test.Middleware
             //    code = HttpStatusCode.BadRequest;
             //if (exception is NotFoundException)
             //    code = HttpStatusCode.NotFound;
+            if (exception is NotFoundException)
+                code = HttpStatusCode.NotFound;
 
             var friendlyErrorMessage = exception.Message;
             var fullErrorDetails = exception.GetErrorDetails();

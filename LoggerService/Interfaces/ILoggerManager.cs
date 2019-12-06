@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LoggerService.Interfaces
+﻿namespace LoggerService.Interfaces
 {
     public interface ILoggerManager
     {
@@ -11,5 +7,6 @@ namespace LoggerService.Interfaces
         void LogDebug(string message);
         void LogError(string message);
         void LogTrace(string message);
+        void LogFatal(string message);
     }
 }

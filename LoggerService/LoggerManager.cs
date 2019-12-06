@@ -35,5 +35,10 @@ namespace LoggerService
         {
             _logger.Trace(message);
         }
+
+        public void LogFatal(string message)
+        {
+            _logger.Fatal(message);
+        }
     }
 }

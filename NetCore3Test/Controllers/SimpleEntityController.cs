@@ -40,7 +40,7 @@ namespace NetCore3Test.Controllers
         [SwaggerResponse(404, "The entity data was not found")]
         public async Task<ActionResult<SimpleEntityOutput>> SimpleEntityPost(SimpleEntityCreateCommand dto)
         {
-            var validName = Guard.Argument(dto.Name, nameof(dto.Name)).NotWhiteSpace();
+            var validName = Guard.Argument(dto.Name, nameof(dto.Name)).NotWhiteSpace().NotNull();
             return Ok(await _simpleService.AddNewSimpleEntity(validName).ConfigureAwait(false));
 
         }
@@ -51,8 +51,8 @@ namespace NetCore3Test.Controllers
         [SwaggerResponse(404, "The entity data was not found")]
         public IActionResult GetByExtensionMethod(string name, string otherName)
         {
-            var validName = Guard.Argument(name, nameof(name)).NotWhiteSpace();
-            var validOtherName = Guard.Argument(otherName, nameof(otherName)).NotWhiteSpace();
+            var validName = Guard.Argument(name, nameof(name)).NotWhiteSpace().NotNull();
+            var validOtherName = Guard.Argument(otherName, nameof(otherName)).NotWhiteSpace().NotNull();
             return Ok(_simpleService.DemonstrateExtensionMethod(validName, validOtherName));
         }
 
@@ -63,8 +63,8 @@ namespace NetCore3Test.Controllers
         [SwaggerResponse(404, "The entity data was not found")]
         public async Task<ActionResult<SimpleEntityOutput>> SimpleEntityPatch(Guid id, SimpleEntityUpdateCommand dto)
         {
-            var validId = Guard.Argument(id.ToString(), nameof(id)).Equal(dto.Id.ToString());
-            var validName = Guard.Argument(dto.Name, nameof(dto.Name)).NotWhiteSpace();
+            var validId = Guard.Argument(id.ToString(), nameof(id)).Equal(dto.Id.ToString()).NotNull();
+            var validName = Guard.Argument(dto.Name, nameof(dto.Name)).NotWhiteSpace().NotNull();
 
             return Ok(await _simpleService.UpdateSimpleEntity(Guid.Parse(validId), validName).ConfigureAwait(false));
 
