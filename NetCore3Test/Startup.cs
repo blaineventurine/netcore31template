@@ -83,6 +83,7 @@ namespace NetCore3Test
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 
+            // Comment out to disable automatic migration/seeding
             using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             serviceScope.ServiceProvider.GetService<ApplicationContext>().Database.Migrate();
         }
