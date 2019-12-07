@@ -39,12 +39,10 @@ namespace NetCore3Test.Middleware
             var code = HttpStatusCode.InternalServerError;
             if (exception is ArgumentException)
                 code = HttpStatusCode.BadRequest;
+            if (exception is ServiceInputException)
+                code = HttpStatusCode.BadRequest;
             //if (exception is DomainException)
             //    code = HttpStatusCode.BadRequest;
-            //if (exception is ServiceInputException)
-            //    code = HttpStatusCode.BadRequest;
-            //if (exception is NotFoundException)
-            //    code = HttpStatusCode.NotFound;
             if (exception is NotFoundException)
                 code = HttpStatusCode.NotFound;
 

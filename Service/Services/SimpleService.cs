@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dawn;
-using Domain.Interfaces;
 using Domain.Models;
 using LoggerService.Interfaces;
 using Service.Extensions;
@@ -27,12 +25,7 @@ namespace Service.Services
         public IQueryable<SimpleEntityOutput> GetAll()
         {
             var entities = _unitOfWork.GetRepository<SimpleEntity>().GetAll();
-            var output = new List<SimpleEntityOutput>();
-
-            foreach (var simpleEntity in entities)
-            {
-                output.Add(new SimpleEntityOutput(simpleEntity));
-            }
+            var output = entities.Select(entity => new SimpleEntityOutput(entity));
 
             return output.AsQueryable();
         }
@@ -43,21 +36,15 @@ namespace Service.Services
             var entities = _unitOfWork.GetRepository<SimpleEntity>().GetSimpleEntitiesByName(name, otherName);
             _logger.LogTrace($"Found {entities.Count()} entities matching {name} and {otherName}");
 
-            var output = new List<SimpleEntityOutput>();
+            var output = entities.Select(entity => new SimpleEntityOutput(entity));
 
-            foreach (var simpleEntity in entities)
-            {
-                output.Add(new SimpleEntityOutput(simpleEntity));
-            }
-
-            return output.AsQueryable();
+            return output;
         }
-
 
         public async Task<SimpleEntityOutput> GetSingleById(Guid id)
         {
             var entity = await _unitOfWork.GetRepository<SimpleEntity>().GetSingle(x => x.Id == id);
-            entity = Guard.Argument(entity).EntityExists();
+            entity = Guard.Argument(entity).EntityExists(id);
             return new SimpleEntityOutput(entity);
         }
 
@@ -75,7 +62,7 @@ namespace Service.Services
             var response = _unitOfWork.SaveChanges();
 
             if (response == 1)
-                _logger.LogTrace("Success!");
+                _logger.LogTrace($"Success! Entity with name {name} added");
             else
                 _logger.LogError($"Unable to save changes for {entity}");
 
@@ -85,14 +72,21 @@ namespace Service.Services
         public async Task<SimpleEntityOutput> UpdateSimpleEntity(Guid id, string name)
         {
             var entity = await _unitOfWork.GetRepository<SimpleEntity>().GetSingle(x => x.Id == id);
+            entity = Guard.Argument(entity).EntityExists(id);
 
             var updatedEntity = new SimpleEntity(
                 entity.Id,
                 name
                 );
 
+            _logger.LogTrace($"Updating {entity}");
             _unitOfWork.GetRepository<SimpleEntity>().Update(updatedEntity);
-            _unitOfWork.SaveChanges();
+            var response = _unitOfWork.SaveChanges();
+
+            if (response == 1)
+                _logger.LogTrace($"Success! Entity with ID {id} updated");
+            else
+                _logger.LogError($"Unable to save changes for ID {id}");
 
             return new SimpleEntityOutput(await _unitOfWork.GetRepository<SimpleEntity>().GetSingle(x => x.Id == id));
 

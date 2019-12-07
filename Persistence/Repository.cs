@@ -14,11 +14,13 @@ namespace Persistence
     {
         private readonly TContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
+        private readonly bool _isAuditable;
 
         public Repository(TContext dbContext)
         {
             _dbContext = dbContext;
             _dbSet = _dbContext.Set<TEntity>();
+            _isAuditable = typeof(TEntity).GetInterfaces().Any(i => i.Name.Equals(nameof(IAuditable)));
         }
 
         public async Task<TEntity> GetSingle(Expression<Func<TEntity, bool>> predicate = null, bool disableTracking = true)
@@ -52,16 +54,25 @@ namespace Persistence
 
         public async Task<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<TEntity>> Add(TEntity entity)
         {
+            if (_isAuditable && entity is IAuditable auditableEntity)
+                UpdateTrackingColumns(ref auditableEntity);
+
             return await _dbSet.AddAsync(entity);
         }
 
         public Task Add(params TEntity[] entities)
         {
-            return _dbSet.AddRangeAsync(entities);
+            if (_isAuditable && entities is IAuditable[] auditableEntity)
+                UpdateTrackingColumns(ref auditableEntity);
+
+            return _dbSet.AddRangeAsync(entities); ;
         }
 
         public Task Add(IEnumerable<TEntity> entities)
         {
+            if (_isAuditable && entities is IEnumerable<TEntity> auditableEntity)
+                UpdateTrackingColumns(ref auditableEntity);
+
             return _dbSet.AddRangeAsync(entities);
         }
 
@@ -101,16 +112,25 @@ namespace Persistence
 
         public void Update(TEntity entity)
         {
+            if (_isAuditable && entity is IAuditable auditableEntity)
+                UpdateTrackingColumns(ref auditableEntity);
+
             _dbSet.Update(entity);
         }
 
         public void Update(params TEntity[] entities)
         {
+            if (_isAuditable && entities is IAuditable[] auditableEntity)
+                UpdateTrackingColumns(ref auditableEntity);
+
             _dbSet.UpdateRange(entities);
         }
 
         public void Update(IEnumerable<TEntity> entities)
         {
+            if (_isAuditable && entities is IEnumerable<TEntity> auditableEntity)
+                UpdateTrackingColumns(ref auditableEntity);
+
             _dbSet.UpdateRange(entities);
         }
 
@@ -119,6 +139,39 @@ namespace Persistence
             _dbContext?.Dispose();
         }
 
+        private void UpdateTrackingColumns(ref IAuditable[] entities, bool overrideAuditable = false)
+        {
+
+            foreach (var entity in entities)
+            {
+                if (_isAuditable && entity is IAuditable auditableEntity)
+                    UpdateTrackingColumns(ref auditableEntity, overrideAuditable);
+            }
+        }
+
+        private void UpdateTrackingColumns(ref IEnumerable<TEntity> entities, bool overrideAuditable = false)
+        {
+            foreach (var entity in entities)
+            {
+                if (_isAuditable && entity is IAuditable auditableEntity)
+                    UpdateTrackingColumns(ref auditableEntity, overrideAuditable);
+            }
+        }
+
+        private void UpdateTrackingColumns(ref IAuditable entity, bool overrideAuditable = false)
+        {
+            if (!overrideAuditable && entity.CreatedDate == default)
+            {
+                entity.CreatedDate = DateTime.Now.ToUniversalTime();
+                //entity.CreatedBy = _currentUser.Email;
+                //entity.CreatedById = _currentUser.PortalUserId;
+            }
+
+            //entity.LastUpdateBy = _currentUser.Email;
+            //entity.LastUpdateById = _currentUser.PortalUserId;
+            if (!overrideAuditable)
+                entity.LastUpdatedDate = DateTime.Now.ToUniversalTime();
+        }
 
     }
 }
