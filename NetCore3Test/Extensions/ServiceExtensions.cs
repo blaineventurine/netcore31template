@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Reflection;
 using Domain.Models;
+using FluentValidation.AspNetCore;
 using LoggerService;
 using LoggerService.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using NetCore3Test.Filters;
 using Persistence;
 using Service.Interfaces;
 using Service.Services;
@@ -43,11 +43,10 @@ namespace NetCore3Test.Extensions
 
         public static void ConfigureMVC(this IServiceCollection services)
         {
-            services.AddMvc(options =>
-                {
-                    options.Filters.Add(typeof(ValidateModelFilterAttribute));
-
-                }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            services
+                .AddMvc()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
@@ -112,7 +111,7 @@ namespace NetCore3Test.Extensions
             services.UseSimpleInjectorAspNetRequestScoping(container);
 
         }
-        //TODO: Apply your security headers
+        //TODO: Apply security headers
         public static void UseSecurityHeaders(this IApplicationBuilder app)
         {
             app.Use(async (context, next) =>

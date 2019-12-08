@@ -182,6 +182,9 @@ dotnet_diagnostic.CA1303.severity = warning
 # CA1062: Validate arguments of public methods
 dotnet_diagnostic.CA1062.severity = suggestion
 
+# CA1710: Identifiers should have correct suffix
+dotnet_diagnostic.CA1710.severity = silent
+
 [*.vb] 
 # Modifier preferences 
 visual_basic_preferred_modifier_order = Partial,Default,Private,Protected,Public,Friend,NotOverridable,Overridable,MustOverride,Overloads,Overrides,MustInherit,NotInheritable,Static,Shared,Shadows,ReadOnly,WriteOnly,Dim,Const,WithEvents,Widening,Narrowing,Custom,Async:suggestion 

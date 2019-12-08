@@ -40,8 +40,7 @@ namespace NetCore3Test.Controllers
         [SwaggerResponse(404, "The entity data was not found")]
         public async Task<ActionResult<SimpleEntityOutput>> SimpleEntityPost(SimpleEntityCreateCommand dto)
         {
-            var validName = Guard.Argument(dto.Name, nameof(dto.Name)).NotWhiteSpace().NotNull();
-            return Ok(await _simpleService.AddNewSimpleEntity(validName).ConfigureAwait(false));
+            return Ok(await _simpleService.AddNewSimpleEntity(dto.Name).ConfigureAwait(false));
 
         }
 
@@ -64,9 +63,8 @@ namespace NetCore3Test.Controllers
         public async Task<ActionResult<SimpleEntityOutput>> SimpleEntityPatch(Guid id, SimpleEntityUpdateCommand dto)
         {
             var validId = Guard.Argument(id.ToString(), nameof(id)).Equal(dto.Id.ToString()).NotNull();
-            var validName = Guard.Argument(dto.Name, nameof(dto.Name)).NotWhiteSpace().NotNull();
 
-            return Ok(await _simpleService.UpdateSimpleEntity(Guid.Parse(validId), validName).ConfigureAwait(false));
+            return Ok(await _simpleService.UpdateSimpleEntity(Guid.Parse(validId), dto.Name).ConfigureAwait(false));
 
         }
 

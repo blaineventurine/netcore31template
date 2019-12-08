@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NetCore3Test.Extensions;
-using NetCore3Test.Filters;
 using NetCore3Test.Middleware;
 using NLog;
 using Persistence;
@@ -34,17 +33,18 @@ namespace NetCore3Test
         public void ConfigureServices(IServiceCollection services)
         {
             var config = ConfigFileLoader.GetAppSettings(_env);
+
             services.AddLocalization();
             services.AddControllers();
             services.AddOptions();
-            services.AddScoped<ValidateModelFilterAttribute>();
 
-            services.ConfigureMVC();
             services.ConfigureDependencyInjection(_container);
+            services.ConfigureMVC();
             services.ConfigureDb(config);
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureSwagger();
+
         }
 
 
@@ -52,24 +52,17 @@ namespace NetCore3Test
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
             else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-            }
 
             app.UseSimpleInjector(_container, options => app.UseMiddleware<ExceptionMiddleware>(_container));
-
             app.UseHttpsRedirection();
             app.UseRouting();
 
             //app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-
             app.UseCors("CorsPolicy");
             app.UseCookiePolicy();
 
