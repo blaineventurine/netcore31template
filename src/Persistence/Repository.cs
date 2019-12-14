@@ -79,7 +79,8 @@ namespace Persistence
         public void Delete(TEntity entity)
         {
             var existing = _dbSet.Find(entity);
-            if (existing != null) _dbSet.Remove(existing);
+            if (existing != null)
+                _dbSet.Remove(existing);
         }
 
         public void Delete(object id)

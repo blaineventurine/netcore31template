@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using NetCore3Test.Dtos.Commands;
+using static Common.Constants.NumericalConstants;
 
 namespace NetCore3Test.ModelValidators
 {
@@ -7,7 +8,7 @@ namespace NetCore3Test.ModelValidators
     {
         public SimpleEntityCreateCommandValidators()
         {
-            RuleFor(x => x.Name).NotNull().Length(1, 2);
+            RuleFor(x => x.Name).NotNull().Length(MIN_NAME_LENGTH, MAX_NAME_LENGTH);
         }
     }
 
@@ -15,7 +16,7 @@ namespace NetCore3Test.ModelValidators
     {
         public SimpleEntityUpdateCommandValidators()
         {
-            RuleFor(x => x.Name).NotNull().Length(1, 2);
+            RuleFor(x => x.Name).NotNull().Length(MIN_NAME_LENGTH, MAX_NAME_LENGTH);
         }
     }
 }

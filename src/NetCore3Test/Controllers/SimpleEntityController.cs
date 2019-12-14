@@ -26,8 +26,6 @@ namespace NetCore3Test.Controllers
 
         [HttpGet("simpleEntity")]
         [SwaggerResponse(200, "Entity data was found", typeof(IEnumerable<SimpleEntityOutput>))]
-        [SwaggerResponse(400, "The entity data is invalid")]
-        [SwaggerResponse(404, "The entity data was not found")]
         public ActionResult<IEnumerable<SimpleEntityOutput>> SimpleEntityGetAll()
         {
             return Ok(_simpleService.GetAll());
@@ -36,8 +34,6 @@ namespace NetCore3Test.Controllers
         [HttpPost]
         [Route("simpleEntity")]
         [SwaggerResponse(201, "The entity was created", typeof(SimpleEntityOutput))]
-        [SwaggerResponse(400, "The entity data is invalid")]
-        [SwaggerResponse(404, "The entity data was not found")]
         public async Task<ActionResult<SimpleEntityOutput>> SimpleEntityPost(SimpleEntityCreateCommand dto)
         {
             return Ok(await _simpleService.AddNewSimpleEntity(dto.Name).ConfigureAwait(false));
@@ -46,8 +42,6 @@ namespace NetCore3Test.Controllers
 
         [HttpGet("simpleEntitiesExtension")]
         [SwaggerResponse(200, "Entity data was found", typeof(IEnumerable<SimpleEntityOutput>))]
-        [SwaggerResponse(400, "The entity data is invalid")]
-        [SwaggerResponse(404, "The entity data was not found")]
         public IActionResult GetByExtensionMethod(string name, string otherName)
         {
             var validName = Guard.Argument(name, nameof(name)).NotWhiteSpace().NotNull();
@@ -58,8 +52,6 @@ namespace NetCore3Test.Controllers
         [HttpPatch]
         [Route("simpleEntity/{id}")]
         [SwaggerResponse(201, "The entity was created", typeof(SimpleEntityOutput))]
-        [SwaggerResponse(400, "The entity data is invalid")]
-        [SwaggerResponse(404, "The entity data was not found")]
         public async Task<ActionResult<SimpleEntityOutput>> SimpleEntityPatch(Guid id, SimpleEntityUpdateCommand dto)
         {
             var validId = Guard.Argument(id.ToString(), nameof(id)).Equal(dto.Id.ToString()).NotNull();
@@ -70,8 +62,6 @@ namespace NetCore3Test.Controllers
 
         [HttpGet("simpleEntity/{id}")]
         [SwaggerResponse(200, "Entity data was found", typeof(SimpleEntityOutput))]
-        [SwaggerResponse(400, "The entity data is invalid")]
-        [SwaggerResponse(404, "The entity data was not found")]
         public async Task<ActionResult<SimpleEntityOutput>> SimpleEntityGetById(Guid id)
         {
             return Ok(await _simpleService.GetSingleById(id).ConfigureAwait(false));

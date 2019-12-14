@@ -19,10 +19,14 @@ namespace Persistence
 
         public IRepository<T> GetRepository<T>() where T : class, IEntity
         {
-            if (_repositories == null) _repositories = new Dictionary<Type, object>();
+            if (_repositories == null)
+                _repositories = new Dictionary<Type, object>();
 
             var type = typeof(T);
-            if (!_repositories.ContainsKey(type)) _repositories[type] = new Repository<TContext, T>(Context);
+
+            if (!_repositories.ContainsKey(type))
+                _repositories[type] = new Repository<TContext, T>(Context);
+
             return (IRepository<T>)_repositories[type];
         }
 
